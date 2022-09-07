@@ -1,10 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const DocumentNotFound = require('../utils/documentNotFound');
-const BadRequest = require('../utils/badRequest');
-const DuplicateError = require('../utils/duplicateError');
-const ErrorUnauthorized = require('../utils/errorUnauthorized');
+const DocumentNotFound = require('../utils/errorClass/documentNotFound');
+const BadRequest = require('../utils/errorClass/badRequest');
+const DuplicateError = require('../utils/errorClass/duplicateError');
+const ErrorUnauthorized = require('../utils/errorClass/errorUnauthorized');
 const {
   incorrectFound,
   incorrectRequest,
@@ -40,8 +40,8 @@ module.exports.createUser = async (req, res, next) => {
         new BadRequest(
           `${Object.values(err.errors)
             .map((error) => error.message)
-            .join(', ')}`,
-        ),
+            .join(', ')}`
+        )
       );
     } else {
       next(err);
@@ -60,7 +60,7 @@ module.exports.login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret-key',
         {
           expiresIn: '7d',
-        },
+        }
       );
       res.send({ token, message: 'Успешная авторизация' });
     })
@@ -95,7 +95,7 @@ module.exports.patchUsersMe = (req, res, next) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    },
+    }
   )
     .orFail(() => {
       throw new DocumentNotFound(incorrectFound);

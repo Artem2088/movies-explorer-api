@@ -1,7 +1,7 @@
 const Movie = require('../models/movie');
-const BadRequest = require('../utils/badRequest');
-const DocumentNotFound = require('../utils/documentNotFound');
-const DeleteMovie = require('../utils/deleteMovie');
+const BadRequest = require('../utils/errorClass/badRequest');
+const DocumentNotFound = require('../utils/errorClass/documentNotFound');
+const DeleteMovie = require('../utils/errorClass/deleteMovie');
 const {
   incorrectFound,
   incorrectRequest,
