@@ -11,15 +11,14 @@ const {
   incorrectDuplicate,
   incorrectAuth,
 } = require('../constants/errConstMessage');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { SALT, MODE } = require('../utils/configFile/config');
 
 // создаёт пользователя с переданными в теле email, password и name
 module.exports.createUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   try {
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password, SALT);
     const user = await User.create({
       name,
       email,
@@ -40,8 +39,8 @@ module.exports.createUser = async (req, res, next) => {
         new BadRequest(
           `${Object.values(err.errors)
             .map((error) => error.message)
-            .join(', ')}`
-        )
+            .join(', ')}`,
+        ),
       );
     } else {
       next(err);
@@ -55,13 +54,9 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret-key',
-        {
-          expiresIn: '7d',
-        }
-      );
+      const token = jwt.sign({ _id: user._id }, MODE, {
+        expiresIn: '7d',
+      });
       res.send({ token, message: 'Успешная авторизация' });
     })
     .catch((err) => {
@@ -95,7 +90,7 @@ module.exports.patchUsersMe = (req, res, next) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    }
+    },
   )
     .orFail(() => {
       throw new DocumentNotFound(incorrectFound);

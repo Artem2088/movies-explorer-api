@@ -18,6 +18,7 @@ module.exports.getMovies = (req, res, next) => {
 // создаёт фильм с переданными в теле country, director, duration, year,
 // description, image, trailer, nameRU, nameEN и thumbnail, movieId
 module.exports.postMovies = (req, res, next) => {
+  const owner = req.user._id;
   const {
     country,
     director,
@@ -43,8 +44,9 @@ module.exports.postMovies = (req, res, next) => {
     movieId,
     nameRU,
     nameEN,
+    owner,
   })
-    .then((newMovies) => res.send(newMovies))
+    .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest(incorrectRequest));

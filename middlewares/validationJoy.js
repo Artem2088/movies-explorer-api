@@ -31,7 +31,7 @@ const validPostMovies = celebrate({
   body: Joi.object().keys({
     country: Joi.string().required(),
     director: Joi.string().required(),
-    duration: Joi.number().required().integer(),
+    duration: Joi.number().required(),
     year: Joi.string().required(),
     description: Joi.string().required(),
     image: Joi.string().required().regex(Regular),
@@ -45,7 +45,7 @@ const validPostMovies = celebrate({
 
 const validMoviesId = celebrate({
   params: Joi.object().keys({
-    moviedId: Joi.string().hex().length(24).required(),
+    movieId: Joi.string().hex().length(24).required(),
   }),
 });
 

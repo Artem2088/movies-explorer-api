@@ -21,7 +21,13 @@ const app = express();
 
 app.use(helmet());
 
-mongoose.connect(DB_DEV).catch((error) => new ConnectTimedOut(error));
+mongoose
+  .connect(DB_DEV, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    family: 4,
+  })
+  .catch((error) => new ConnectTimedOut(error));
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -38,8 +44,15 @@ app.use(
       'http://localhost:3001',
       'http://localhost:3000',
     ],
-  })
+  }),
 );
+
+// нужно удалить после ревью!
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signup', validCreateUser, createUser);
 app.post('/signin', validLogin, login);
