@@ -6,18 +6,12 @@ const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const { centrErr } = require('./middlewares/centrErr');
-const auth = require('./middlewares/auth');
-const userRouter = require('./routes/user');
-const movieRouter = require('./routes/movie');
-const { createUser, login } = require('./controllers/user');
-const DocumentNotFound = require('./utils/errorClass/documentNotFound');
 const ConnectTimedOut = require('./utils/errorClass/сonnectTimedOut');
-const { incorrectFound } = require('./constants/errConstMessage');
-const { validCreateUser, validLogin } = require('./middlewares/validationJoy');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { PORT_DEV, DB_DEV } = require('./utils/configFile/config');
-
 const app = express();
+const router = require('./routes/index');
+const { apiLimiter } = require('./middlewares/rateLimiter');
 
 app.use(helmet());
 
@@ -27,7 +21,7 @@ mongoose
     useUnifiedTopology: true,
     family: 4,
   })
-  .catch((error) => new ConnectTimedOut(error));
+  .catch((error) => new ConnectTimedOut(console.log(error)));
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -44,31 +38,12 @@ app.use(
       'http://localhost:3001',
       'http://localhost:3000',
     ],
-  }),
+  })
 );
 
-// нужно удалить после ревью!
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
+app.use(apiLimiter);
 
-app.post('/signup', validCreateUser, createUser);
-app.post('/signin', validLogin, login);
-
-app.use('/', auth, userRouter);
-app.use('/', auth, movieRouter);
-
-// обработчик не существующей страницы
-app.use('*', auth, (req, res, next) => {
-  try {
-    next(new DocumentNotFound(incorrectFound));
-  } catch (err) {
-    next(err);
-  }
-});
-
+app.use(router);
 app.use(errorLogger);
 
 app.use(errors());

@@ -9,7 +9,7 @@ const {
   incorrectFound,
   incorrectRequest,
   incorrectDuplicate,
-  incorrectAuth,
+  incorrectMail,
 } = require('../constants/errConstMessage');
 const { SALT, MODE } = require('../utils/configFile/config');
 
@@ -39,8 +39,8 @@ module.exports.createUser = async (req, res, next) => {
         new BadRequest(
           `${Object.values(err.errors)
             .map((error) => error.message)
-            .join(', ')}`,
-        ),
+            .join(', ')}`
+        )
       );
     } else {
       next(err);
@@ -61,7 +61,7 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 401) {
-        next(new ErrorUnauthorized(incorrectAuth));
+        next(new ErrorUnauthorized(incorrectMail));
       } else {
         next(err);
       }
@@ -71,13 +71,15 @@ module.exports.login = (req, res, next) => {
 // возвращает информацию о пользователе (email и имя)
 module.exports.getUsersMe = async (req, res, next) => {
   const userId = req.user._id;
-
-  await User.findById(userId)
-    .then((user) => res.send(user))
-    .catch((err) => {
-      res.send(err);
-    })
-    .catch(next);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new DocumentNotFound(incorrectFound));
+    }
+    res.send(user);
+  } catch (err) {
+    next(err);
+  }
 };
 
 // обновляет информацию о пользователе (email и имя)
@@ -90,7 +92,7 @@ module.exports.patchUsersMe = (req, res, next) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    },
+    }
   )
     .orFail(() => {
       throw new DocumentNotFound(incorrectFound);
@@ -99,6 +101,8 @@ module.exports.patchUsersMe = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest(incorrectRequest));
+      } else if (err.code === 11000) {
+        next(new DuplicateError(incorrectDuplicate));
       } else {
         next(err);
       }

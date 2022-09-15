@@ -1,7 +1,7 @@
 const Movie = require('../models/movie');
 const BadRequest = require('../utils/errorClass/badRequest');
 const DocumentNotFound = require('../utils/errorClass/documentNotFound');
-const DeleteMovie = require('../utils/errorClass/deleteMovie');
+const ForbiddenError = require('../utils/errorClass/ForbiddenError');
 const {
   incorrectFound,
   incorrectRequest,
@@ -66,7 +66,7 @@ module.exports.deleteMoviesId = (req, res, next) => {
     })
     .then((movie) => {
       if (!movie.owner.equals(req.user._id)) {
-        return next(new DeleteMovie(incorrectDelete));
+        return next(new ForbiddenError(incorrectDelete));
       }
       return movie
         .remove()
