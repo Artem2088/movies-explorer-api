@@ -12,7 +12,7 @@ const { PORT_DEV, DB_DEV } = require('./utils/configFile/config');
 
 const app = express();
 const router = require('./routes/index');
-const apiLimiter = require('./middlewares/rateLimiter');
+const { apiLimiter } = require('./middlewares/rateLimiter');
 
 app.use(helmet());
 
