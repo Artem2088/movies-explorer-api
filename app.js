@@ -9,9 +9,10 @@ const { centrErr } = require('./middlewares/centrErr');
 const ConnectTimedOut = require('./utils/errorClass/сonnectTimedOut');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { PORT_DEV, DB_DEV } = require('./utils/configFile/config');
+
 const app = express();
 const router = require('./routes/index');
-const { apiLimiter } = require('./middlewares/rateLimiter');
+const apiLimiter = require('./middlewares/rateLimiter');
 
 app.use(helmet());
 
@@ -38,7 +39,7 @@ app.use(
       'http://localhost:3001',
       'http://localhost:3000',
     ],
-  })
+  }),
 );
 
 app.use(apiLimiter);

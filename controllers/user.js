@@ -39,8 +39,8 @@ module.exports.createUser = async (req, res, next) => {
         new BadRequest(
           `${Object.values(err.errors)
             .map((error) => error.message)
-            .join(', ')}`
-        )
+            .join(', ')}`,
+        ),
       );
     } else {
       next(err);
@@ -74,7 +74,7 @@ module.exports.getUsersMe = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return next(new DocumentNotFound(incorrectFound));
+      next(new DocumentNotFound(incorrectFound));
     }
     res.send(user);
   } catch (err) {
@@ -92,7 +92,7 @@ module.exports.patchUsersMe = (req, res, next) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    }
+    },
   )
     .orFail(() => {
       throw new DocumentNotFound(incorrectFound);

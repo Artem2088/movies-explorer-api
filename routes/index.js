@@ -1,7 +1,8 @@
 const express = require('express');
+
 const router = express.Router();
-const userRouter = require('../routes/user');
-const movieRouter = require('../routes/movie');
+const userRouter = require('./user');
+const movieRouter = require('./movie');
 const { createUser, login } = require('../controllers/user');
 const DocumentNotFound = require('../utils/errorClass/documentNotFound');
 const { incorrectFound } = require('../constants/errConstMessage');
