@@ -35,11 +35,12 @@ app.use(
     origin: [
       'https://api.domainname.artem.nomoredomains.sbs',
       'https://domainname.artem.nomoredomains.sbs',
+      'http://api.domainname.artem.nomoredomains.sbs',
       'http://domainname.artem.nomoredomains.sbs',
       'http://localhost:3001',
       'http://localhost:3000',
     ],
-  }),
+  })
 );
 
 app.use(apiLimiter);
