@@ -1,6 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 const validator = require('validator');
-const { cyrillicPattern, latinPattern } = require('../helpers/regular');
+// const { cyrillicPattern, latinPattern } = require('../helpers/regular');
 
 const validLogin = celebrate({
   body: Joi.object().keys({
@@ -56,8 +56,8 @@ const validPostMovies = celebrate({
         return halpers.message('URL адрес невалидный ');
       }),
     movieId: Joi.number().required(),
-    nameRU: Joi.string().required().regex(cyrillicPattern),
-    nameEN: Joi.string().required().regex(latinPattern),
+    nameRU: Joi.string().required(),
+    nameEN: Joi.string().required(),
   }),
 });
 
