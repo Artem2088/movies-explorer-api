@@ -57,20 +57,10 @@ module.exports.postMovies = (req, res, next) => {
 };
 
 // удаляет сохранённый фильм по id
-module.exports.deleteMoviesId = (req, res, next) => {
+module.exports.deleteMoviesId = async (req, res, next) => {
   const { movieId } = req.params;
 
-  Movie.findById(movieId)
-    .orFail(() => {
-      throw new DocumentNotFound(incorrectFound);
-    })
-    .then((movie) => {
-      if (!movie.owner.equals(req.user._id)) {
-        return next(new ForbiddenError(incorrectDelete));
-      }
-      return movie
-        .remove()
-        .then(() => res.send({ message: 'Карточка удалена успешно' }));
-    })
-    .catch(next);
+  let response = await Movie.deleteMany({ movieId });
+
+  res.send({ status: response });
 };
